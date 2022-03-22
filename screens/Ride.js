@@ -37,8 +37,8 @@ export default class RideScreen extends Component {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
 
         this.setState({
-            /*status === "granted" is true when user has granted permission
-                status === "granted" is false when user has not granted the permission
+            /*estado === "concedido" es verdadero cuando el usuario ha concedido el permiso.
+                estado === "concedido" es falso cuando el usuario no ha concedido el permiso.
               */
             hasCameraPermissions: status === "granted",
             domState: "scanner",
@@ -59,14 +59,14 @@ export default class RideScreen extends Component {
         await this.getBikeDetails(bikeId);
         await this.getUserDetails(userId);
 
-        // Check the Bike Availability using the function 'checkBikeAvailability()' and by passing the argument 'bikeId'.Store the status in a variable 'transactionType'
+        // Comprueba la disponibilidad de la bicicleta usando la función 'checkBikeAvailability()' y pasándola la argumento 'bikeId'. Almacena el estado en una variable 'transactionType'
         var transactionType = await this.checkBikeAvailability(bikeId);
-        // Check if 'transactionType' variable is empty
+        // Comprueba si la variable 'transactionType' está vacía
         if (!transactionType) {
-            // if 'transactionType' is empty, make the 'bikeId' value as ""
+            // Si 'transactionType' está vacía, haz que el valor de 'bikeId' sea ""
             this.setState({ bikeId: "" });
-            // Make an alert message to pop on the screen to enter the valid bike id
-            Alert.alert("Kindly enter/scan valid bike id");
+            // Haz una alerta emergente en la pantalla para ingresa el id de la bicileta. válido.
+            Alert.alert("Ingresa/escanea un id de bicileta válido");
         } else if (transactionType === "under_maintenance") {
             this.setState({
                 bikeId: ""
@@ -76,15 +76,15 @@ export default class RideScreen extends Component {
                 var { bikeType, userName } = this.state;
                 this.assignBike(bikeId, userId, bikeType, userName);
                 Alert.alert(
-                    "You have rented the bike for next 1 hour. Enjoy your ride!!!"
+                    "Haz rentado la bicileta por una hora. ¡Disfruta tu viaje!"
                 );
                 this.setState({
                     bikeAssigned: true
                 });
 
-                // For Android users only
+                // Solo para usuarios Android
                 // ToastAndroid.show(
-                //   "You have rented the bike for next 1 hour. Enjoy your ride!!",
+                //   "¡Haz rentado la bicicleta por una hora. ¡Disfruta tu viaje!",
                 //   ToastAndroid.SHORT
                 // );
             
@@ -92,14 +92,14 @@ export default class RideScreen extends Component {
             
                 var { bikeType, userName } = this.state;
                 this.returnBike(bikeId, userId, bikeType, userName);
-                Alert.alert("We hope you enjoyed your ride");
+                Alert.alert("Esperamos que hayas disfrutado tu viaje");
                 this.setState({
                     bikeAssigned: false
                 });
 
-                // For Android users only
+                // Solo para usuarios Android
                 // ToastAndroid.show(
-                //   "We hope you enjoyed your ride",
+                //   "Esperamos que hayas disfrutado tu viaje.",
                 //   ToastAndroid.SHORT
                 // );
             
@@ -152,7 +152,7 @@ export default class RideScreen extends Component {
             bikeRef.docs.map(doc => {
                 
                 if (!doc.data().under_maintenance) {
-                    //if the bike is available then transaction type will be rented otherwise it will be return
+                    //Si la bicicleta está disponible entonces el tipo de transacción será rentar, de lo contrario, será devolver.
 
                     transactionType = doc.data().is_bike_available ?
                         "rented" : "return";
@@ -171,7 +171,7 @@ export default class RideScreen extends Component {
 
     
     assignBike = async (bikeId, userId, bikeType, userName) => {
-        //add a transaction
+        //agrega una transacción
         db.collection("transactions").add({
             user_id: userId,
             user_name: userName,
@@ -180,27 +180,27 @@ export default class RideScreen extends Component {
             date: firebase.firestore.Timestamp.now().toDate(),
             transaction_type: "rented"
         });
-        //change bike status
+        //cambia el estado de la bicicleta
         db.collection("bicycles")
             .doc(bikeId)
             .update({
                 is_bike_available: false
             });
-        //change value  of bike assigned for user
+        //cambia el valor de la bicicleta asignada al usuario
         db.collection("users")
             .doc(userId)
             .update({
                 bike_assigned: true
             });
 
-        // Updating local state
+        // Actualizando estado local
         this.setState({
             bikeId: ""
         });
     };
 
     returnBike = async (bikeId, userId, bikeType, userName) => {
-        //add a transaction
+        //agrega una transacción
         db.collection("transactions").add({
             user_id: userId,
             user_name: userName,
@@ -209,20 +209,20 @@ export default class RideScreen extends Component {
             date: firebase.firestore.Timestamp.now().toDate(),
             transaction_type: "return"
         });
-        //change bike status
+        //cambia el estado de la bicicleta
         db.collection("bicycles")
             .doc(bikeId)
             .update({
                 is_bike_available: true
             });
-        //change value  of bike assigned for user
+        //cambia el valor de la bicicleta asignada al usuario
         db.collection("users")
             .doc(userId)
             .update({
                 bike_assigned: false
             });
 
-        // Updating local state
+        // Actualizando el estado local
         this.setState({
             bikeId: ""
         });
@@ -243,14 +243,14 @@ export default class RideScreen extends Component {
                 <View style={styles.upperContainer}>
                     <Image source={appIcon} style={styles.appIcon} />
                     <Text style={styles.title}>e-ride</Text>
-                    <Text style={styles.subtitle}>A Eco-Friendly Ride</Text>
+                    <Text style={styles.subtitle}>Un viaje eco-friendly</Text>
                 </View>
                 <View style={styles.lowerContainer}>
                     <View style={styles.textinputContainer}>
                         <TextInput
                             style={[styles.textinput, { width: "82%" }]}
                             onChangeText={text => this.setState({ userId: text })}
-                            placeholder={"User Id"}
+                            placeholder={"Id del usuario"}
                             placeholderTextColor={"#FFFFFF"}
                             value={userId}
                         />
@@ -259,7 +259,7 @@ export default class RideScreen extends Component {
                         <TextInput
                             style={styles.textinput}
                             onChangeText={text => this.setState({ bikeId: text })}
-                            placeholder={"Bicycle Id"}
+                            placeholder={"Id de la bicicleta"}
                             placeholderTextColor={"#FFFFFF"}
                             value={bikeId}
                             autoFocus
@@ -268,7 +268,7 @@ export default class RideScreen extends Component {
                             style={styles.scanbutton}
                             onPress={() => this.getCameraPermissions()}
                         >
-                            <Text style={styles.scanbuttonText}>Scan</Text>
+                            <Text style={styles.scanbuttonText}>Escanear</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -277,7 +277,7 @@ export default class RideScreen extends Component {
                         onPress={this.handleTransaction}
                     >
                         <Text style={styles.buttonText}>
-                            {bikeAssigned ? "End Ride" : "Unlock"}
+                            {bikeAssigned ? "Terminar viaje" : "Unlock"}
                         </Text>
                     </TouchableOpacity>
                 </View>
