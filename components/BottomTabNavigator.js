@@ -24,7 +24,7 @@ export default class BottomTabNavigator extends Component {
                 iconName = "time";
               }
 
-              // You can return any component that you like here!
+              // ¡Puedes devolver cualquier componente que quieras aquí!
               return (
                 <Ionicons
                   name={iconName}
